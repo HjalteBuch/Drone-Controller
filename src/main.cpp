@@ -17,4 +17,6 @@ void loop() {
   Serial.print(analogRead(joystickXPin));
   Serial.print(", Y: ");
   Serial.println(analogRead(joystickYPin));
+
+  Serial.println("Test test");
 }
