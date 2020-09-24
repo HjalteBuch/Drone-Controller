@@ -18,5 +18,4 @@ void loop() {
   Serial.print(", Y: ");
   Serial.println(analogRead(joystickYPin));
 
-  Serial.println("Test test222222222kljfælkajsdælkfj");
 }
