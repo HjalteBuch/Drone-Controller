@@ -1,13 +1,18 @@
 #include <Arduino.h>
 
+int joystickXPin = 2;
+int joystickYPin = 4;
+
 void setup() {
-  // put your setup code here, to run once:
+  Serial.begin(9600);
+  pinMode(joystickXPin, INPUT);
+  pinMode(joystickYPin, INPUT);
+
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  
-
-
-  
+  Serial.print("X: ");
+  Serial.print(analogRead(joystickXPin));
+  Serial.print(", Y: ");
+  Serial.println(analogRead(joystickYPin));
 }
