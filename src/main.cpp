@@ -15,6 +15,7 @@ const int joystickXPin = 2;
 const int joystickYPin = 4;
 const int potentiometerPin = 15;
 const int buttonPinBlue = 23;
+//pin 32 & 36 doesnt work
 //const int buttonPinWhite = 32;
 
 int takeofflandcheck = 0;
