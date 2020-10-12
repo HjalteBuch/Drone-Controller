@@ -27,6 +27,19 @@ void command(){
               IPAddress(192, 168, 10, 1), 8889);
 }
 
+void connect(){
+  WiFi.mode(WIFI_STA);
+  Serial.println("Connecting...");
+  WiFi.begin(ssid, password);
+  if (WiFi.waitForConnectResult() != WL_CONNECTED) {
+    Serial.println("WiFi Failed");
+    while (1) {
+      delay(1000);
+    }
+  }
+  Serial.println("Connected");
+}
+
 void setup() {
   Serial.begin(9600);
   pinMode(joystickXPin, INPUT);
@@ -43,19 +56,6 @@ void setup() {
 
   command();
   Serial.println("ready!");
-}
-
-void connect(){
-  WiFi.mode(WIFI_STA);
-  Serial.println("Connecting...");
-  WiFi.begin(ssid, password);
-  if (WiFi.waitForConnectResult() != WL_CONNECTED) {
-    Serial.println("WiFi Failed");
-    while (1) {
-      delay(1000);
-    }
-  }
-  Serial.println("Connected");
 }
 
 void takeoff(){
