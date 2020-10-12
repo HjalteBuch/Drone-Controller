@@ -99,7 +99,8 @@ void loop() {
     }
   }
 
-  
-  Serial.println(analogRead(potentiometerPin));
+  int result = analogRead(potentiometerPin);
+  Serial.print(analogRead(joystickYPin));
+  Serial.println(result);
 
 }
