@@ -78,12 +78,14 @@ void upAndDown(){
     String msg = "down" + ascend;
     udp.writeTo((const uint8_t *)msg.c_str(), msg.length(),
               IPAddress(192, 168, 10, 1), 8889);
+    Serial.println("descending");
   }
 
   if(ascend > prev){
     String msg = "up" + ascend;
     udp.writeTo((const uint8_t *)msg.c_str(), msg.length(),
               IPAddress(192, 168, 10, 1), 8889);
+    Serial.println("ascending");
   }
   
   prev = ascend;
