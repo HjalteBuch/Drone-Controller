@@ -65,16 +65,18 @@ void land(){
 
 void loop() {
   
-if(digitalRead(buttonPinWhite) == LOW){
-  if(!inAir){
-    takeoff();
-    inAir = true;
-    Serial.println("Takeoff");
+  if(digitalRead(buttonPinWhite) == LOW){
+    if(!inAir){
+      takeoff();
+      inAir = true;
+      Serial.println("Takeoff");
+      delay(1000);
+    }
+    if(inAir){
+     land();
+     inAir = false;
+      Serial.println("Land");
+      delay(1000);
+    }
   }
-  if(inAir){
-    land();
-    inAir = false;
-    Serial.println("Land");
-  }
-}
 }
