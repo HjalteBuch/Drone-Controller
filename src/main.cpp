@@ -99,6 +99,7 @@ void loop() {
     }
   }
 
-  upAndDown();
+  
+  Serial.println(analogRead(potentiometerPin));
 
 }
