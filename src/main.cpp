@@ -39,12 +39,15 @@ void setup() {
   mpu6050.begin();
   mpu6050.calcGyroOffsets(true);
 
+  connect();
+
   command();
   Serial.println("ready!");
 }
 
 void connect(){
   WiFi.mode(WIFI_STA);
+  Serial.println("Connecting...");
   WiFi.begin(ssid, password);
   if (WiFi.waitForConnectResult() != WL_CONNECTED) {
     Serial.println("WiFi Failed");
@@ -70,7 +73,6 @@ void land(){
 void loop() {
 
   if(digitalRead(buttonPinBlue) == LOW){
-    Serial.println("Connecting...");
     connect();
     delay(1000);
 
