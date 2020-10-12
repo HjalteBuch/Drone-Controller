@@ -15,7 +15,7 @@ const int joystickXPin = 2;
 const int joystickYPin = 4;
 const int potentiometerPin = 15;
 const int buttonPinWhite = 23;
-const int buttonPinBlue = 21;
+const int buttonPinBlue = 5;
 
 boolean inAir = false;
 
@@ -39,14 +39,12 @@ void setup() {
   mpu6050.begin();
   mpu6050.calcGyroOffsets(true);
 
-
-  WiFi.mode(WIFI_STA);
-
   command();
   Serial.println("ready!");
 }
 
 void connect(){
+  WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   if (WiFi.waitForConnectResult() != WL_CONNECTED) {
     Serial.println("WiFi Failed");
