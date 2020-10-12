@@ -69,6 +69,11 @@ void land(){
               IPAddress(192, 168, 10, 1), 8889);
 }
 
+void upAndDown(){
+  Serial.println(digitalRead(potentiometerPin));
+  
+}
+
 void loop() {
 
   if(digitalRead(buttonPinBlue) == LOW){
@@ -93,4 +98,7 @@ void loop() {
       break;
     }
   }
+
+  upAndDown();
+
 }
