@@ -28,7 +28,6 @@ void command(){
 }
 
 void connect(){
-  WiFi.mode(WIFI_STA);
   Serial.println("Connecting...");
   WiFi.begin(ssid, password);
   if (WiFi.waitForConnectResult() != WL_CONNECTED) {
@@ -51,6 +50,7 @@ void setup() {
   mpu6050.begin();
   mpu6050.calcGyroOffsets(true);
 
+  WiFi.mode(WIFI_STA);
   connect();
 
   command();
