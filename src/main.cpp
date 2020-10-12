@@ -15,6 +15,7 @@ const int joystickXPin = 2;
 const int joystickYPin = 4;
 const int potentiometerPin = 15;
 const int buttonPinWhite = 23;
+const int buttonPinBlue = 21;
 
 boolean inAir = false;
 
@@ -32,6 +33,7 @@ void setup() {
   pinMode(joystickYPin, INPUT);
   pinMode(potentiometerPin, INPUT);
   pinMode(buttonPinWhite, INPUT_PULLUP);
+  pinMode(buttonPinBlue, INPUT_PULLUP);
 
   Wire.begin();
   mpu6050.begin();
@@ -39,6 +41,12 @@ void setup() {
 
 
   WiFi.mode(WIFI_STA);
+
+  command();
+  Serial.println("ready!");
+}
+
+void connect(){
   WiFi.begin(ssid, password);
   if (WiFi.waitForConnectResult() != WL_CONNECTED) {
     Serial.println("WiFi Failed");
@@ -46,10 +54,8 @@ void setup() {
       delay(1000);
     }
   }
-  Serial.println("ready!");
+  Serial.println("Connected");
 }
-
-
 
 void takeoff(){
   String msg = "takeoff";
@@ -64,19 +70,28 @@ void land(){
 }
 
 void loop() {
+
+  if(digitalRead(buttonPinBlue) == LOW){
+    Serial.println("Connecting...");
+    connect();
+    delay(1000);
+
+  }
   
-  if(digitalRead(buttonPinWhite) == LOW){
+  while(digitalRead(buttonPinWhite) == LOW){
     if(!inAir){
       takeoff();
       inAir = true;
       Serial.println("Takeoff");
       delay(1000);
+      break;
     }
     if(inAir){
      land();
      inAir = false;
       Serial.println("Land");
       delay(1000);
+      break;
     }
   }
 }
