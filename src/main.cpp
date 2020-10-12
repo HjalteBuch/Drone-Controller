@@ -12,8 +12,8 @@ const char * ssid = "TELLO-598E42";
 const char * password = "";
 
 const int joystickXPin = 2;
-const int joystickYPin = 4;
-const int potentiometerPin = 15;
+const int joystickYPin = 36;
+const int potentiometerPin = 32;
 const int buttonPinWhite = 23;
 const int buttonPinBlue = 5;
 
@@ -70,8 +70,21 @@ void land(){
 }
 
 void upAndDown(){
-  Serial.println(analogRead(potentiometerPin));
+  int prev;
+  int ascend = analogRead(potentiometerPin) / 9 + 20;
+  if(ascend < prev){
+    String msg = "down" + ascend;
+    udp.writeTo((const uint8_t *)msg.c_str(), msg.length(),
+              IPAddress(192, 168, 10, 1), 8889);
+  }
+
+  if(ascend > prev){
+    String msg = "up" + ascend;
+    udp.writeTo((const uint8_t *)msg.c_str(), msg.length(),
+              IPAddress(192, 168, 10, 1), 8889);
+  }
   
+  prev = ascend;
 }
 
 void loop() {
@@ -98,9 +111,6 @@ void loop() {
       break;
     }
   }
-
-  int result = analogRead(potentiometerPin);
-  Serial.print(analogRead(joystickYPin));
-  Serial.println(result);
+  upAndDown();
 
 }
