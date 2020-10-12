@@ -17,6 +17,8 @@ const int potentiometerPin = 32;
 const int buttonPinWhite = 23;
 const int buttonPinBlue = 5;
 
+
+
 boolean inAir = false;
 
 int takeofflandcheck = 0;
@@ -69,8 +71,8 @@ void land(){
               IPAddress(192, 168, 10, 1), 8889);
 }
 
+int prev = analogRead(potentiometerPin);
 void upAndDown(){
-  int prev;
   int ascend = analogRead(potentiometerPin) / 9 + 20;
   if(ascend < prev){
     String msg = "down" + ascend;
