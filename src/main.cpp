@@ -14,9 +14,9 @@ const char * password = "";
 const int joystickXPin = 2;
 const int joystickYPin = 4;
 const int potentiometerPin = 15;
-const int buttonPinBlue = 23;
-//pin 32 & 36 doesnt work
-//const int buttonPinWhite = 32;
+const int buttonPinWhite = 23;
+
+boolean inAir = false;
 
 int takeofflandcheck = 0;
 
@@ -31,8 +31,7 @@ void setup() {
   pinMode(joystickXPin, INPUT);
   pinMode(joystickYPin, INPUT);
   pinMode(potentiometerPin, INPUT);
-  pinMode(buttonPinBlue, INPUT_PULLUP);
-  //pinMode(buttonPinWhite, INPUT_PULLUP);
+  pinMode(buttonPinWhite, INPUT_PULLUP);
 
   Wire.begin();
   mpu6050.begin();
@@ -66,8 +65,16 @@ void land(){
 
 void loop() {
   
-if(digitalRead(buttonPinBlue) == LOW){
-  takeoff();
-  Serial.println("takeoff");
+if(digitalRead(buttonPinWhite) == LOW){
+  if(!inAir){
+    takeoff();
+    inAir = true;
+    Serial.println("Takeoff");
+  }
+  if(inAir){
+    land();
+    inAir = false;
+    Serial.println("Land");
+  }
 }
 }
