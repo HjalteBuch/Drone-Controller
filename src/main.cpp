@@ -70,7 +70,7 @@ void land(){
 }
 
 void upAndDown(){
-  Serial.println(digitalRead(potentiometerPin));
+  Serial.println(analogRead(potentiometerPin));
   
 }
 
