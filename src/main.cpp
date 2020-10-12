@@ -33,11 +33,10 @@ void connect(){
   WiFi.begin(ssid, password);
   if (WiFi.waitForConnectResult() != WL_CONNECTED) {
     Serial.println("WiFi Failed");
-    while (1) {
-      delay(1000);
-    }
   }
-  Serial.println("Connected");
+  if (WiFi.waitForConnectResult() == WL_CONNECTED) {
+    Serial.println("Connected");
+  }
 }
 
 void setup() {
