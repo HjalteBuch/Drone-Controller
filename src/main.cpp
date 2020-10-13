@@ -29,11 +29,14 @@ void command(){
               IPAddress(192, 168, 10, 1), 8889);
 }
 
+//virker kun første gang
+//hvis dronen bliver disconnected, kan den ikke connecte til dronen igen.
 void connect(){
   Serial.println("Connecting...");
   WiFi.begin(ssid, password);
   if (WiFi.waitForConnectResult() != WL_CONNECTED) {
     Serial.println("WiFi Failed");
+    return;
   }
   if (WiFi.waitForConnectResult() == WL_CONNECTED) {
     command();
@@ -54,7 +57,6 @@ void setup() {
   mpu6050.calcGyroOffsets(true);
 
   WiFi.mode(WIFI_STA);
-  connect();
 
   Serial.println("ready!");
 }
@@ -76,14 +78,15 @@ void land(){
 int prev = analogRead(potentiometerPin);
 void upAndDown(){
   int ascend = analogRead(potentiometerPin) / 9 + 20;
-  if(ascend < prev){
+
+  if(ascend < prev-2){
     String msg = "down" + ascend;
     udp.writeTo((const uint8_t *)msg.c_str(), msg.length(),
               IPAddress(192, 168, 10, 1), 8889);
     Serial.println("descending");
   }
 
-  if(ascend > prev){
+  if(ascend > prev+2){
     String msg = "up" + ascend;
     udp.writeTo((const uint8_t *)msg.c_str(), msg.length(),
               IPAddress(192, 168, 10, 1), 8889);
