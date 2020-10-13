@@ -36,6 +36,7 @@ void connect(){
     Serial.println("WiFi Failed");
   }
   if (WiFi.waitForConnectResult() == WL_CONNECTED) {
+    command();
     Serial.println("Connected");
   }
 }
@@ -55,7 +56,6 @@ void setup() {
   WiFi.mode(WIFI_STA);
   connect();
 
-  command();
   Serial.println("ready!");
 }
 
@@ -71,6 +71,8 @@ void land(){
               IPAddress(192, 168, 10, 1), 8889);
 }
 
+
+//når potentiometer står stille køre den skiftevis "descending" og "ascending", men den fatter mens man drejer
 int prev = analogRead(potentiometerPin);
 void upAndDown(){
   int ascend = analogRead(potentiometerPin) / 9 + 20;
