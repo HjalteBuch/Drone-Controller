@@ -3,6 +3,7 @@
 #include <MPU6050_tockn.h>
 #include <AsyncUDP.h>
 #include <WiFi.h>
+#include <string>
 
 MPU6050 mpu6050(Wire);
 
@@ -173,7 +174,12 @@ void rc(){
   int b = pitch();
   int c = upAndDown();
   int d = yaw();
-  sendmsg("rc" + a + b + c + d);
+  String msg0 = " " + a;
+  String msg1 = " " + b;
+  String msg2 = " " + c;
+  String msg3 = " " + d;
+  String msg = "rc"+msg0+msg1+msg2+msg3;
+  sendmsg(msg);
 }
 
 void loop()
