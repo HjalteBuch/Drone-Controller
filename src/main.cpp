@@ -22,16 +22,23 @@ const int buttonPinBlue = 5;
 int prevalue = 0;
 const int tollerance = 250;
 
+int rollDeadzone;
+int pitchDeadzone;
+
 //takeoff / land check
 boolean inAir = false;
 
 int takeofflandcheck = 0;
 
-void command()
-{
-  String msg = "command";
+void sendmsg(String msg){
   udp.writeTo((const uint8_t *)msg.c_str(), msg.length(),
               IPAddress(192, 168, 10, 1), 8889);
+  Serial.println(msg);
+}
+
+void command()
+{
+  sendmsg("command");
 }
 
 //virker kun første gang
@@ -69,6 +76,11 @@ void setup()
   mpu6050.begin();
   mpu6050.calcGyroOffsets(true);
 
+
+  mpu6050.update();
+  rollDeadzone = mpu6050.getAngleX();
+  pitchDeadzone = mpu6050.getAngleY();
+
   WiFi.mode(WIFI_STA);
 
   Serial.println("ready!");
@@ -76,16 +88,12 @@ void setup()
 
 void takeoff()
 {
-  String msg = "takeoff";
-  udp.writeTo((const uint8_t *)msg.c_str(), msg.length(),
-              IPAddress(192, 168, 10, 1), 8889);
+  sendmsg("takeoff");
 }
 
 void land()
 {
-  String msg = "land";
-  udp.writeTo((const uint8_t *)msg.c_str(), msg.length(),
-              IPAddress(192, 168, 10, 1), 8889);
+  sendmsg("land");
 }
 
 void takeoffLand()
@@ -119,20 +127,31 @@ void upAndDown()
 
   if (height > prevalue + tollerance)
   {
-    String msg = "up 20";
-    udp.writeTo((const uint8_t *)msg.c_str(), msg.length(),
-                IPAddress(192, 168, 10, 1), 8889);
-                prevalue = height;
-                Serial.println(msg);
+    sendmsg("up 20");
+    prevalue = height;
   }
 
   if (height < prevalue - tollerance)
   {
-    String msg = "down 20";
-    udp.writeTo((const uint8_t *)msg.c_str(), msg.length(),
-                IPAddress(192, 168, 10, 1), 8889);
-                prevalue = height;
-                Serial.println(msg);
+    sendmsg("down 20");
+    prevalue = height;
+  }
+}
+void direction(){
+  mpu6050.update();
+  int roll = mpu6050.getAngleX();
+  if(roll > rollDeadzone + 10){
+    sendmsg("left 20");
+  }
+  if(roll < rollDeadzone - 10){
+    sendmsg("right 20");
+  }
+  int pitch = mpu6050.getAngleY();
+  if(pitch < pitchDeadzone - 10){
+    sendmsg("forward 20");
+  }
+  if(pitch > pitchDeadzone + 10){
+    sendmsg("back 20");
   }
 }
 
@@ -141,4 +160,5 @@ void loop()
   connect();
   takeoffLand();
   upAndDown();
+  direction();
 }
