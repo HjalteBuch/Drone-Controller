@@ -8,73 +8,160 @@ MPU6050 mpu6050(Wire);
 
 AsyncUDP udp;
 //wifi name
-const char * ssid = "TELLO-598E42";
-const char * password = "";
+const char *ssid = "TELLO-598E42";
+const char *password = "";
 
+//Pin numbers bliver defineret her
 const int joystickXPin = 2;
-const int joystickYPin = 4;
-const int potentiometerPin = 15;
+const int joystickYPin = 36;
+const int potentiometerPin = 32;
 const int buttonPinWhite = 23;
+const int buttonPinBlue = 5;
 
+//til potentiometeret
+int prevalue = 0;
+const int tollerance = 250;
+
+int rollDeadzone;
+int pitchDeadzone;
+
+//takeoff / land check
 boolean inAir = false;
 
 int takeofflandcheck = 0;
 
-void command(){
-  String msg = "command";
+void sendmsg(String msg){
   udp.writeTo((const uint8_t *)msg.c_str(), msg.length(),
               IPAddress(192, 168, 10, 1), 8889);
+  Serial.println(msg);
 }
 
-void setup() {
+void command()
+{
+  sendmsg("command");
+}
+
+//virker kun første gang
+//hvis dronen bliver disconnected, kan den ikke connecte til dronen igen.
+void connect()
+{
+  if (digitalRead(buttonPinBlue) == LOW)
+  {
+    Serial.println("Connecting...");
+    WiFi.begin(ssid, password);
+    if (WiFi.waitForConnectResult() != WL_CONNECTED)
+    {
+      Serial.println("WiFi Failed");
+      return;
+    }
+    if (WiFi.waitForConnectResult() == WL_CONNECTED)
+    {
+      command();
+      Serial.println("Connected");
+    }
+    delay(1000);
+  }
+}
+
+void setup()
+{
   Serial.begin(9600);
   pinMode(joystickXPin, INPUT);
   pinMode(joystickYPin, INPUT);
   pinMode(potentiometerPin, INPUT);
   pinMode(buttonPinWhite, INPUT_PULLUP);
+  pinMode(buttonPinBlue, INPUT_PULLUP);
 
   Wire.begin();
   mpu6050.begin();
   mpu6050.calcGyroOffsets(true);
 
 
+  mpu6050.update();
+  rollDeadzone = mpu6050.getAngleX();
+  pitchDeadzone = mpu6050.getAngleY();
+
   WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-  if (WiFi.waitForConnectResult() != WL_CONNECTED) {
-    Serial.println("WiFi Failed");
-    while (1) {
-      delay(1000);
-    }
-  }
+
   Serial.println("ready!");
 }
 
-
-
-void takeoff(){
-  String msg = "takeoff";
-  udp.writeTo((const uint8_t *)msg.c_str(), msg.length(),
-              IPAddress(192, 168, 10, 1), 8889);
+void takeoff()
+{
+  sendmsg("takeoff");
 }
 
-void land(){
-  String msg = "land";
-  udp.writeTo((const uint8_t *)msg.c_str(), msg.length(),
-              IPAddress(192, 168, 10, 1), 8889);
+void land()
+{
+  sendmsg("land");
 }
 
-void loop() {
-  
-if(digitalRead(buttonPinWhite) == LOW){
-  if(!inAir){
-    takeoff();
-    inAir = true;
-    Serial.println("Takeoff");
+void takeoffLand()
+{
+  while (digitalRead(buttonPinWhite) == LOW)
+  {
+    if (!inAir)
+    {
+      takeoff();
+      inAir = true;
+      Serial.println("Takeoff");
+      delay(1000);
+      break;
+    }
+    if (inAir)
+    {
+      land();
+      inAir = false;
+      Serial.println("Land");
+      delay(1000);
+      break;
+    }
   }
-  if(inAir){
-    land();
-    inAir = false;
-    Serial.println("Land");
+}
+
+//når potentiometer står stille køre den skiftevis "descending" og "ascending", men den fatter mens man drejer
+int prev = analogRead(potentiometerPin);
+void upAndDown()
+{
+  int height = analogRead(potentiometerPin);
+
+  if (height > prevalue + tollerance)
+  {
+    sendmsg("up 20");
+    prevalue = height;
+  }
+
+  if (height < prevalue - tollerance)
+  {
+    sendmsg("down 20");
+    prevalue = height;
   }
 }
+void direction(){
+  mpu6050.update();
+  int roll = mpu6050.getAngleX();
+  if(roll > rollDeadzone + 10){
+    sendmsg("left 20");
+  }
+  if(roll < rollDeadzone - 10){
+    sendmsg("right 20");
+  }
+  int pitch = mpu6050.getAngleY();
+  if(pitch < pitchDeadzone - 10){
+    sendmsg("forward 20");
+  }
+  if(pitch > pitchDeadzone + 10){
+    sendmsg("back 20");
+  }
+  roll = rollDeadzone;
+  pitch = pitchDeadzone;
+}
+
+void loop()
+{
+  connect();
+  takeoffLand();
+  upAndDown();
+  direction();
+  delay(1000);
 }
