@@ -153,8 +153,6 @@ void direction(){
   if(pitch > pitchDeadzone + 10){
     sendmsg("back 20");
   }
-  roll = rollDeadzone;
-  pitch = pitchDeadzone;
 }
 
 void loop()
@@ -163,5 +161,4 @@ void loop()
   takeoffLand();
   upAndDown();
   direction();
-  delay(1000);
 }
