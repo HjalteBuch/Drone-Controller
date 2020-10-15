@@ -20,10 +20,11 @@ const int buttonPinBlue = 5;
 
 //til potentiometeret
 int prevalue = 0;
-const int tollerance = 250;
+const int tollerance = 2;
 
 int rollDeadzone;
 int pitchDeadzone;
+int yawDeadzone;
 
 //takeoff / land check
 boolean inAir = false;
@@ -80,6 +81,7 @@ void setup()
   mpu6050.update();
   rollDeadzone = mpu6050.getAngleX();
   pitchDeadzone = mpu6050.getAngleY();
+  yawDeadzone = analogRead(joystickXPin);
 
   WiFi.mode(WIFI_STA);
 
@@ -119,49 +121,65 @@ void takeoffLand()
   }
 }
 
-//når potentiometer står stille køre den skiftevis "descending" og "ascending", men den fatter mens man drejer
+
 int prev = analogRead(potentiometerPin);
-void upAndDown()
+int upAndDown()
 {
-  int height = analogRead(potentiometerPin);
+  int height = analogRead(potentiometerPin)/45;
 
-  if (height > prevalue + tollerance)
+  if (height > prevalue + tollerance || height < prevalue - tollerance)
   {
-    sendmsg("up 20");
+    return height;
     prevalue = height;
   }
-
-  if (height < prevalue - tollerance)
-  {
-    sendmsg("down 20");
-    prevalue = height;
-  }
+  return 0;
 }
-void direction(){
+
+
+int roll(){
   mpu6050.update();
   int roll = mpu6050.getAngleX();
-  if(roll > rollDeadzone + 10){
-    sendmsg("left 20");
+  if(roll > rollDeadzone + 10 || roll < rollDeadzone - 10){
+    return roll;
   }
-  if(roll < rollDeadzone - 10){
-    sendmsg("right 20");
-  }
+  return 0;
+}
+
+
+int pitch(){
+  mpu6050.update();
   int pitch = mpu6050.getAngleY();
-  if(pitch < pitchDeadzone - 10){
-    sendmsg("forward 20");
+  if(pitch < pitchDeadzone - 10 || pitch > pitchDeadzone + 10){
+    return pitch;
   }
-  if(pitch > pitchDeadzone + 10){
-    sendmsg("back 20");
+  return 0;
+}
+
+int yaw(){
+  int yaw = analogRead(joystickXPin);
+  if(yaw < 0){
+    yaw = yaw/-45;
+  } else{
+    yaw = yaw /45;
   }
-  roll = rollDeadzone;
-  pitch = pitchDeadzone;
+  if(yaw > yawDeadzone + 2 || yaw < yawDeadzone - 2){
+    return yaw;
+  }
+  return 0;
+}
+
+void rc(){
+  int a = roll();
+  int b = pitch();
+  int c = upAndDown();
+  int d = yaw();
+  sendmsg("rc" + a + b + c + d);
 }
 
 void loop()
 {
   connect();
   takeoffLand();
-  upAndDown();
-  direction();
-  delay(1000);
+  rc();
+  
 }
