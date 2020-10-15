@@ -174,11 +174,12 @@ void rc(){
   int b = pitch();
   int c = upAndDown();
   int d = yaw();
-  String msg0 = " " + a;
-  String msg1 = " " + b;
-  String msg2 = " " + c;
-  String msg3 = " " + d;
+  String msg0 = "" + a;
+  String msg1 = "" + b;
+  String msg2 = "" + c;
+  String msg3 = "" + d;
   String msg = "rc"+msg0+msg1+msg2+msg3;
+  Serial.println(msg);
   sendmsg(msg);
 }
 
