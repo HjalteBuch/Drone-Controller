@@ -19,7 +19,8 @@ const int buttonPinWhite = 23;
 const int buttonPinBlue = 5;
 
 //til potentiometeret
-bool prevalue;
+int prevalue = 0;
+const int tollerance = 250;
 
 //takeoff / land check
 boolean inAir = false;
@@ -51,8 +52,8 @@ void connect()
       command();
       Serial.println("Connected");
     }
+    delay(1000);
   }
-  delay(1000);
 }
 
 void setup()
@@ -114,23 +115,25 @@ void takeoffLand()
 int prev = analogRead(potentiometerPin);
 void upAndDown()
 {
-  int ascend = analogRead(potentiometerPin);
+  int height = analogRead(potentiometerPin);
 
-  if (ascend < prev - 1)
+  if (height > prevalue + tollerance)
   {
-    String msg = "down " + ascend;
+    String msg = "up 20";
     udp.writeTo((const uint8_t *)msg.c_str(), msg.length(),
                 IPAddress(192, 168, 10, 1), 8889);
+                prevalue = height;
+                Serial.println(msg);
   }
 
-  if (ascend > prev + 1)
+  if (height < prevalue - tollerance)
   {
-    String msg = "up " + ascend;
+    String msg = "down 20";
     udp.writeTo((const uint8_t *)msg.c_str(), msg.length(),
                 IPAddress(192, 168, 10, 1), 8889);
+                prevalue = height;
+                Serial.println(msg);
   }
-
-  prev = ascend;
 }
 
 void loop()
