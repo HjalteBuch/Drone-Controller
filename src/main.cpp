@@ -12,8 +12,7 @@ const char *ssid = "TELLO-598E42";
 const char *password = "";
 
 //Pin numbers bliver defineret her
-const int joystickXPin = 2;
-const int joystickYPin = 36;
+const int joystickXPin = 36;
 const int potentiometerPin = 32;
 const int buttonPinWhite = 23;
 const int buttonPinBlue = 5;
@@ -24,6 +23,7 @@ const int tollerance = 250;
 
 int rollDeadzone;
 int pitchDeadzone;
+int yawDeadzone;
 
 //takeoff / land check
 boolean inAir = false;
@@ -67,7 +67,6 @@ void setup()
 {
   Serial.begin(9600);
   pinMode(joystickXPin, INPUT);
-  pinMode(joystickYPin, INPUT);
   pinMode(potentiometerPin, INPUT);
   pinMode(buttonPinWhite, INPUT_PULLUP);
   pinMode(buttonPinBlue, INPUT_PULLUP);
@@ -80,6 +79,7 @@ void setup()
   mpu6050.update();
   rollDeadzone = mpu6050.getAngleX();
   pitchDeadzone = mpu6050.getAngleY();
+  yawDeadzone = analogRead(joystickXPin);
 
   WiFi.mode(WIFI_STA);
 
@@ -120,7 +120,6 @@ void takeoffLand()
 }
 
 //når potentiometer står stille køre den skiftevis "descending" og "ascending", men den fatter mens man drejer
-int prev = analogRead(potentiometerPin);
 void upAndDown()
 {
   int height = analogRead(potentiometerPin);
@@ -137,6 +136,8 @@ void upAndDown()
     prevalue = height;
   }
 }
+
+
 void direction(){
   mpu6050.update();
   int roll = mpu6050.getAngleX();
@@ -157,11 +158,21 @@ void direction(){
   pitch = pitchDeadzone;
 }
 
+void yaw(){
+  int yaw = analogRead(joystickXPin);
+  if(yaw > yawDeadzone + 100){
+    sendmsg("cw 36");
+  }
+  if(yaw < yawDeadzone - 100){
+    sendmsg("ccw 36");
+  }
+}
+
 void loop()
 {
   connect();
   takeoffLand();
   upAndDown();
   direction();
-  delay(1000);
+  yaw();
 }
