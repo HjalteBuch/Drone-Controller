@@ -168,11 +168,31 @@ void yaw(){
   }
 }
 
+void rc(){
+  mpu6050.update();
+  int roll = mpu6050.getAngleX();
+  int pitch;
+  int throttle;
+  int yaw;
+
+  Serial.print("Roll: [");
+  Serial.print(roll);
+  Serial.print("], Pitch: [");
+  Serial.print(pitch);
+  Serial.print("], Throttle: [");
+  Serial.print(throttle);
+  Serial.print("], yaw: [");
+  Serial.print(yaw);
+  Serial.print("]");
+  //sendmsg("rc ");
+}
+
 void loop()
 {
   connect();
   takeoffLand();
-  upAndDown();
-  direction();
-  yaw();
+  //upAndDown();
+  //direction();
+  //yaw();
+  rc();
 }
