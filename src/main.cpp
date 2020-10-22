@@ -175,7 +175,7 @@ void rc(){
   int throttle = map(analogRead(potentiometerPin), 0, 4095, -100, 100);
   int yaw = map(analogRead(joystickXPin)+160, 0, 4095, -100, 100);
 
-  Serial.print("Roll: [");
+  /*Serial.print("Roll: [");
   Serial.print(roll);
   Serial.print("], Pitch: [");
   Serial.print(pitch);
@@ -184,7 +184,9 @@ void rc(){
   Serial.print("], yaw: [");
   Serial.print(yaw);
   Serial.println("]");
-  sendmsg("rc " + roll + pitch + throttle + yaw);
+  Serial.println("rc " + roll + pitch + throttle + yaw);*/
+  
+  Serial.printf("\nrc roll: %d pitch: %d throttle: %d yaw: %d",roll,pitch,throttle,yaw);
 }
 
 void loop()
