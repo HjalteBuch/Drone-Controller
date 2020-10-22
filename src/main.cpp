@@ -185,8 +185,11 @@ void rc(){
   Serial.print(yaw);
   Serial.println("]");
   Serial.println("rc " + roll + pitch + throttle + yaw);*/
-  
-  Serial.printf("\nrc roll: %d pitch: %d throttle: %d yaw: %d",roll,pitch,throttle,yaw);
+  //Serial.printf("\nrc roll: %d pitch: %d throttle: %d yaw: %d",roll,pitch,throttle,yaw);
+  String cmd = "rc " + String(roll) + " " + String(pitch) + " " + String(throttle) + " " + String(yaw);
+  sendmsg(cmd);
+
+
 }
 
 void loop()
