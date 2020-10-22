@@ -171,9 +171,9 @@ void yaw(){
 void rc(){
   mpu6050.update();
   int roll = mpu6050.getAngleX();
-  int pitch;
-  int throttle;
-  int yaw;
+  int pitch = mpu6050.getAngleY();
+  int throttle = map(analogRead(potentiometerPin), 0, 4095, -100, 100);
+  int yaw = map(analogRead(joystickXPin)+160, 0, 4095, -100, 100);
 
   Serial.print("Roll: [");
   Serial.print(roll);
@@ -183,8 +183,8 @@ void rc(){
   Serial.print(throttle);
   Serial.print("], yaw: [");
   Serial.print(yaw);
-  Serial.print("]");
-  //sendmsg("rc ");
+  Serial.println("]");
+  sendmsg("rc " + roll + pitch + throttle + yaw);
 }
 
 void loop()
