@@ -170,8 +170,8 @@ void yaw(){
 
 void rc(){
   mpu6050.update();
-  int roll = mpu6050.getAngleX();
-  int pitch = mpu6050.getAngleY();
+  int roll = mpu6050.getAngleX() * -1;
+  int pitch = mpu6050.getAngleY() * -1;
   int throttle = map(analogRead(potentiometerPin), 0, 4095, -100, 100);
   int yaw = map(analogRead(joystickXPin)+160, 0, 4095, -100, 100);
 
@@ -199,5 +199,7 @@ void loop()
   //upAndDown();
   //direction();
   //yaw();
-  rc();
+  if(inAir){
+    rc();
+  }
 }
